@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import * as d3 from 'd3';
 
 import Charts from './Charts/Charts';
 

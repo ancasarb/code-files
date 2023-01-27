@@ -1,15 +1,22 @@
-const Label = props => {
+import "./Label.css";
+
+const Label = (props) => {
   return (
-    <text
-      x={props.x}
-      y={props.y}
-      fill={props.color}
-      textAnchor={props.textAnchor}
-      alignmentBaseline="middle"
-      style={{ fontWeight: "bold" }}
+    <g
+      className="label"
+      style={{ transform: `translate(${props.x}px, ${props.y}px)` }}
     >
-      {props.label}
-    </text>
+      <text
+        x={0}
+        y={0}
+        fill={props.color}
+        textAnchor={props.textAnchor}
+        alignmentBaseline="middle"
+        style={{ fontWeight: "bold" }}
+      >
+        {props.label}
+      </text>
+    </g>
   );
 };
 

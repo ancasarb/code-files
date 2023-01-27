@@ -1,7 +1,15 @@
-const Label = props => {
+const Label = (props) => {
   return (
-    <text></text>
+    <text
+      x={props.x}
+      y={props.y}
+      fill={props.color}
+      textAnchor={props.textAnchor}
+      alignmentBaseline="middle"
+      style={{ fontWeight: "bold" }}
+    >
+      {props.label}
+    </text>
   );
 };
-
 export default Label;

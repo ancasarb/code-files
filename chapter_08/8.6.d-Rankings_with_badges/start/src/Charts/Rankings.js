@@ -1,11 +1,13 @@
-import { useState } from 'react';
+import { useState } from "react";
 import * as d3 from "d3";
 
-import RankingFilters from '../Interactions/RankingFilters';
-import Card from '../UI/Card';
-import ChartContainer from '../ChartComponents/ChartContainer';
-import Curve from '../ChartComponents/Curve';
-import Label from '../ChartComponents/Label';
+import RankingFilters from "../Interactions/RankingFilters";
+import Card from "../UI/Card";
+import ChartContainer from "../ChartComponents/ChartContainer";
+import Curve from "../ChartComponents/Curve";
+import Label from "../ChartComponents/Label";
+import Badge from "../ChartComponents/Badge";
+import { Fragment } from "react";
 
 const rankingFilters = [
   { id: "satisfaction", label: "Satisfaction" },
@@ -14,7 +16,7 @@ const rankingFilters = [
   { id: "awareness", label: "Awareness" },
 ];
 
-const Rankings = props => {
+const Rankings = (props) => {
   const [activeFilter, setActiveFilter] = useState("satisfaction");
 
   const width = 1000;
@@ -24,43 +26,43 @@ const Rankings = props => {
   const innerWidth = width - marginLeft - marginRight;
   const innerHeight = height - props.margin.top - props.margin.bottom;
 
-  const xScale = d3.scalePoint()
+  const xScale = d3
+    .scalePoint()
     .domain(props.data.years)
     .range([0, innerWidth]);
-  const yScale = d3.scalePoint()
+  const yScale = d3
+    .scalePoint()
     .domain(d3.range(1, props.data.ids.length + 1))
     .range([0, innerHeight]);
 
   return (
     <Card>
       <h2>Rankings</h2>
-      <RankingFilters
-        filters={rankingFilters}
-        activeFilter={activeFilter}
-      />
+      <RankingFilters filters={rankingFilters} activeFilter={activeFilter} />
       <ChartContainer
         width={width}
         height={height}
-        margin={{top: props.margin.top, right: marginRight, bottom: props.margin.bottom, left: marginLeft}}
+        margin={{
+          top: props.margin.top,
+          right: marginRight,
+          bottom: props.margin.bottom,
+          left: marginLeft,
+        }}
       >
-        {props.data.years.map(year => (
-          <g 
+        {props.data.years.map((year) => (
+          <g
             key={`line-year-${year}`}
             className="axis"
             transform={`translate(${xScale(year)}, 0)`}
           >
-            <line 
+            <line
               x1={0}
               y1={innerHeight}
               x2={0}
               y2={0}
               strokeDasharray={"6 4"}
             />
-            <text
-              x={0}
-              y={innerHeight + 40}
-              textAnchor="middle"
-            >
+            <text x={0} y={innerHeight + 40} textAnchor="middle">
               {year}
             </text>
           </g>
@@ -76,7 +78,7 @@ const Rankings = props => {
               stroke={props.colorScale(framework.id)}
               strokeWidth={5}
             />
-            {framework[activeFilter][0].rank &&
+            {framework[activeFilter][0].rank && (
               <Label
                 x={-25}
                 y={yScale(framework[activeFilter][0].rank)}
@@ -84,19 +86,35 @@ const Rankings = props => {
                 label={framework.name}
                 textAnchor={"end"}
               />
-            }
+            )}
             <Label
               x={innerWidth + 25}
-              y={yScale(framework[activeFilter][framework[activeFilter].length - 1].rank)}
+              y={yScale(
+                framework[activeFilter][framework[activeFilter].length - 1].rank
+              )}
               color={props.colorScale(framework.id)}
               label={framework.name}
               textAnchor={"start"}
             />
+            {framework[activeFilter].map((selection, i) => (
+              <Fragment key={`${framework.id}-selection-${i}`}>
+                {selection.rank && (
+                  <Badge
+                    translation={[
+                      xScale(selection.year),
+                      yScale(selection.rank),
+                    ]}
+                    strokeColor={props.colorScale(framework.id)}
+                    label={`${Math.round(selection.percentage_question)}%`}
+                  />
+                )}
+              </Fragment>
+            ))}
           </g>
         ))}
-      </ChartContainer> 
+      </ChartContainer>
     </Card>
-  )
+  );
 };
 
 export default Rankings;

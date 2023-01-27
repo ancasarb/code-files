@@ -1,5 +1,16 @@
+const getWindowWidth = () => {
+  return window.innerWidth;
+};
+let windowWidth = getWindowWidth();
+let isDesktopLayout = windowWidth >= 700 ? true : false;
+
 // Chart
-const margin = {top: 35, right: 170, bottom: 35, left: 45};
+const margin = {
+  top: 35,
+  right: isDesktopLayout ? 200 : 10,
+  bottom: 35,
+  left: 45,
+};
 const width = 1200;
 const height = 500;
 let innerWidth = width - margin.left - margin.right;
@@ -23,3 +34,20 @@ const areaGenerator = d3.area();
 
 // Data
 let data;
+
+const fontSizeScale = d3
+  .scaleLinear()
+  .domain([600, 1000])
+  .range([26, 16])
+  .clamp(true);
+
+// Position x-axis labels
+const positionXaxisLabels = () => {
+  d3.selectAll(".axis-x text")
+    .attr("x", (d) => {
+      const currentMonth = d;
+      const nextMonth = new Date(2021, currentMonth.getMonth() + 1, 1);
+      return (xScale(nextMonth) - xScale(currentMonth)) / 2;
+    })
+    .attr("y", 10);
+};

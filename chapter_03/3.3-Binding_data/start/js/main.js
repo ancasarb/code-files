@@ -5,7 +5,7 @@ const svg = d3.select(".responsive-svg-container")
   .style("border", "1px solid black");
 
 // Load, format and measure the dataset
-d3.csv("../data/data.csv", d => {
+d3.csv("js/../data/data.csv", d => {
   // Format the dataset
   return {
     technology: d.technology,
@@ -31,4 +31,22 @@ d3.csv("../data/data.csv", d => {
 });
 
 // Create the bar graph
-const createViz = (data) => {};
+const createViz = (data) => {
+
+  // Use data-binding to append rectangles
+  const barHeight = 20;
+  svg
+    .selectAll("rect")
+    .data(data)
+    .join("rect")
+      .attr("class", d => {
+        console.log(d);
+        return `bar bar-${d.technology}`;
+      })
+      .attr("width", d => d.count)
+      .attr("height", barHeight)
+      .attr("x", 0)
+      .attr("y", (d, i) => (barHeight + 5) * i)
+      .attr("fill", d => d.technology === "D3.js" ? "yellowgreen" : "skyblue");
+
+};

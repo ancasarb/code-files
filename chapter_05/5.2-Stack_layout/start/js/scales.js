@@ -7,7 +7,8 @@ const defineScales = (data) => {
   // Scale for the horizontal axis
   xScale
     .domain(data.map(d => d.year))
-    .range([0, innerWidth]);
+    .range([0, innerWidth])
+    .paddingInner(0.2);
   
   // Color scale
   colorScale

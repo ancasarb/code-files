@@ -1,24 +1,36 @@
-import { Fragment } from 'react';
+import { Fragment } from "react";
 import * as d3 from "d3";
 
-import RankingFilters from '../Interactions/RankingFilters';
-import Card from '../UI/Card';
-import ChartContainer from '../ChartComponents/ChartContainer';
-import Curve from '../ChartComponents/Curve';
-import Label from '../ChartComponents/Label';
-import Badge from '../UI/Badge';
+import Card from "../UI/Card";
+import ChartContainer from "../ChartComponents/ChartContainer";
+import RankingFilters from "../Interactions/RankingFilters";
+import Curve from "../ChartComponents/Curve";
+import Label from "../ChartComponents/Label";
+import Badge from "../UI/Badge";
 
-const Rankings = props => {
-
-  const width = 1000;
-  const height = 542;
-  const marginRight = 150;
-  const marginLeft = 110;
-  const innerWidth = width - marginLeft - marginRight;
+const RankingsMobile = props => {
+  const width = 300;
+  const height = 550;
+  const marginRight = 120;
+  const marginLeft = 30;
+  const innerWidth = width - marginRight - marginLeft;
   const innerHeight = height - props.margin.top - props.margin.bottom;
 
+  const firstYear = props.data.years[0];
+  const lastYear = props.data.years[props.data.years.length - 1];
+  const middleYear = Math.round(d3.median([firstYear, lastYear]));
+  const years = [firstYear, middleYear, lastYear];
+
+  const mobileData = JSON.parse(JSON.stringify(props.data.experience));
+  mobileData.forEach(framework => {
+    framework.awareness = framework.awareness.filter(d => years.includes(d.year));
+    framework.interest = framework.interest.filter(d => years.includes(d.year));
+    framework.satisfaction = framework.satisfaction.filter(d => years.includes(d.year));
+    framework.usage = framework.usage.filter(d => years.includes(d.year));
+  });
+
   const xScale = d3.scalePoint()
-    .domain(props.data.years)
+    .domain(years)
     .range([0, innerWidth]);
   const yScale = d3.scalePoint()
     .domain(d3.range(1, props.data.ids.length + 1))
@@ -30,14 +42,14 @@ const Rankings = props => {
       <RankingFilters
         filters={props.rankingFilters}
         activeFilter={props.activeFilter}
-        onFilterSelection={props.filterSelectionHandler}
+        onFilterSelection={props.onFilterSelection}
       />
       <ChartContainer
         width={width}
         height={height}
-        margin={{top: props.margin.top, right: marginRight, bottom: props.margin.bottom, left: marginLeft}}
+        margin={{ top: props.margin.top, right: marginRight, bottom: props.margin.bottom, left: marginLeft }}
       >
-        {props.data.years.map(year => (
+        {years.map(year => (
           <g 
             key={`line-year-${year}`}
             className="axis"
@@ -59,7 +71,7 @@ const Rankings = props => {
             </text>
           </g>
         ))}
-        {props.data.experience.map((framework, i) => (
+        {mobileData.map((framework, i) => (
           <g key={`curve-${framework.id}`}>
             <Curve
               data={framework[props.activeFilter]}
@@ -70,22 +82,17 @@ const Rankings = props => {
               stroke={props.colorScale(framework.id)}
               strokeWidth={5}
             />
-            {framework[props.activeFilter][0].rank &&
-              <Label
-                x={-25}
-                y={yScale(framework[props.activeFilter][0].rank)}
-                color={props.colorScale(framework.id)}
-                label={framework.name}
-                textAnchor={"end"}
-              />
-            }
             <Label
-              x={innerWidth + 25}
+              x={innerWidth + 30}
               y={yScale(framework[props.activeFilter][framework[props.activeFilter].length - 1].rank)}
               color={props.colorScale(framework.id)}
               label={framework.name}
               textAnchor={"start"}
             />
+          </g>
+        ))}
+        {mobileData.map((framework, i) => (
+          <g key={`bages-${framework.id}`}>
             {framework[props.activeFilter].map((selection, i) => (
               <Fragment key={`${framework.id}-selection-${i}`}>
                 {selection.rank &&
@@ -99,9 +106,9 @@ const Rankings = props => {
             ))}
           </g>
         ))}
-      </ChartContainer> 
+      </ChartContainer>
     </Card>
-  )
+  );
 };
 
-export default Rankings;
+export default RankingsMobile;
